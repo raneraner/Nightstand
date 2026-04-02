@@ -38,6 +38,7 @@
             width: 100%;
             max-width: 450px;
             display: block;
+            line-height: 0; /* מונע רווחים שקופים מתחת לתמונה */
         }
 
         .vader-image {
@@ -45,28 +46,29 @@
             width: 100%;
             height: auto;
             filter: brightness(20%) contrast(130%);
-            /* שינוי הבהירות ייעשה דרך transform כדי להיות חלק יותר */
-            transition: transform 0.1s ease, filter 0.1s ease;
+            transition: filter 0.1s ease;
         }
 
         .lightsaber-warm {
             position: absolute;
-            /* שימוש ב-transform למקום מוחלט ודיוק */
-            top: 50%;
-            left: 50%;
-            width: 8px; /* הרחבת החרב להתאמה לעובי המקורית */
-            height: 48%; 
+            /* נעץ המיקום - ידית החרב */
+            bottom: 15%; /* גובה מתחתית התמונה (שחק עם זה מעלה-מטה) */
+            left: 52%;   /* מרחק משמאל (שחק עם זה ימינה-שמאלה) */
+            
+            width: 1.5%; /* עובי החרב באחוזים */
+            height: 60%; /* אורך החרב באחוזים */
+            
             background-color: #ffd700;
-            border-radius: 4px;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 1), 0 0 60px rgba(255, 165, 0, 1), 0 0 120px rgba(255, 165, 0, 1);
-            transform-origin: top center;
-            /* מיקום וזווית החרב לכיסוי מושלם */
-            transform: translate(-50%, -50%) translate(108px, -1px) rotate(45deg);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 1), 0 0 40px rgba(255, 165, 0, 1), 0 0 80px rgba(255, 165, 0, 1);
+            
+            transform-origin: bottom center; /* קריטי: הסיבוב מחושב מתחתית החרב */
+            transform: rotate(52deg); /* זווית ההטיה (שחק עם זה לשיפוע) */
+            
             opacity: 1;
             z-index: 2;
             pointer-events: none;
-            /* דימר חלק באמצעות transition */
-            transition: opacity 0.1s ease, box-shadow 0.1s ease;
+            transition: opacity 0.1s linear, box-shadow 0.1s linear;
         }
 
         .controls {
@@ -116,44 +118,39 @@
     <div class="controls">
         <label for="brightness">עוצמת מנורת לילה</label>
         <input type="range" id="brightness" min="0" max="100" value="100">
-        <div id="status">גע במסך כדי למנוע כיבוי</div>
+        <div id="status">מצב שינה בוטל - המסך יישאר דלוק</div>
     </div>
 
     <script>
         const brightnessSlider = document.getElementById('brightness');
         const vaderImage = document.querySelector('.vader-image');
         const lightsaber = document.querySelector('.lightsaber-warm');
-        const statusText = document.getElementById('status');
         let wakeLock = null;
 
+        // דימר שמוריד הכל לחושך מוחלט בצורה חלקה
         brightnessSlider.addEventListener('input', (e) => {
             const val = e.target.value / 100;
 
             const glow = `
-                0 0 30px rgba(255, 215, 0, ${val}), 
-                0 0 60px rgba(255, 165, 0, ${val}), 
-                0 0 120px rgba(255, 165, 0, ${val})
+                0 0 20px rgba(255, 215, 0, ${val}), 
+                0 0 40px rgba(255, 165, 0, ${val}), 
+                0 0 80px rgba(255, 165, 0, ${val})
             `;
             lightsaber.style.boxShadow = glow;
-
-            // שינוי הבהירות באמצעות transform לדימר חלק יותר
             lightsaber.style.opacity = val;
-            vaderImage.style.filter = `brightness(${20 + (val * 15)}%) contrast(130%)`; 
+            vaderImage.style.filter = `brightness(${val * 20}%) contrast(130%)`; 
         });
 
         async function requestWakeLock() {
             try {
                 wakeLock = await navigator.wakeLock.request('screen');
-                statusText.innerText = 'מצב שינה בוטל - המסך יישאר דלוק';
             } catch (err) {
-                statusText.innerText = 'לא ניתן לחסום את כיבוי המסך';
+                console.log('Wake Lock error');
             }
         }
 
         document.addEventListener('click', () => {
-            if (!wakeLock) {
-                requestWakeLock();
-            }
+            if (!wakeLock) requestWakeLock();
         }, { once: true });
 
         document.addEventListener('visibilitychange', () => {
