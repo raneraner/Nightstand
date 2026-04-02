@@ -13,120 +13,109 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background-color: #030303; /* כמעט שחור לחלוטין */
-            transition: background-color 0.2s ease;
+            background-color: #000; /* שחור מוחלט */
+            transition: all 0.2s ease;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             overflow: hidden;
             touch-action: none;
-            color: #fff;
         }
 
-        /* מכלול הסצנה במרכז */
-        .scene-container {
+        /* מכלול הסצנה של ויידר */
+        .vader-scene {
+            position: relative;
+            width: 80%;
+            max-width: 400px; /* כדי שלא יתפרש יותר מדי באייפד */
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-bottom: 40px; /* קצת יותר קרוב לסליידר */
-            position: relative;
+            margin-bottom: 60px;
         }
 
-        /* דארת ויידר - דורש פונט תואם, או תמונה, אבל כאן ניצור אותו ב-CSS/פונט כדי לשמור על קובץ בודד */
-        .vader-display {
-            font-size: 200px; /* גודל גדול */
-            position: relative;
-            line-height: 1;
-            user-select: none;
-            cursor: default;
+        /* תמונת דארת ויידר */
+        .vader-image {
+            width: 100%;
+            height: auto;
+            /* הפכנו את התמונה לכהה מאוד - צללית עם פרטים מרומזים */
+            filter: brightness(10%) opacity(90%); 
+            transition: all 0.2s ease;
         }
 
-        /* חרב אור בצבע אור חם - כתום/זהב */
-        .lightsaber-v2 {
-            width: 15px;
-            height: 250px;
-            background-color: #ff9f00; /* צבע אור חם, כתום-זהב */
-            border-radius: 10px;
+        /* החרב האור הריאליסטית והחמה */
+        .lightsaber-warm {
             position: absolute;
-            bottom: -30px; /* ממוקמת ב"יד" */
-            left: 20px; /* ממוקמת ב"יד" */
-            /* ההילה החמה החזקה - מקור האור */
-            box-shadow: 0 0 30px #ff9f00, 0 0 50px #ff9f00, 0 0 70px #ff9f00, 0 0 100px #ff9f00;
-            opacity: 1; /* אטימות מלאה כברירת מחדל */
-            transition: opacity 0.2s ease;
+            top: 61%; /* ממוקמת ביד */
+            left: 23%; /* ממוקמת ביד */
+            width: 4px;
+            height: 32%; /* אורכה של החרב */
+            background-color: #ffd700; /* צבע זהב/ענבר חם */
+            border-radius: 4px;
+            /* הילה חמה רב-שכבתית וחזקה */
+            box-shadow: 0 0 15px #ffd700, 0 0 30px #ffa500, 0 0 60px #ffa500, 0 0 90px #ffa500;
+            transform: rotate(11deg); /* זווית שתתאים ליד */
+            transition: all 0.2s ease;
+            opacity: 1; /* אטימות מלאה */
         }
 
         .controls {
-            background: rgba(10, 10, 10, 0.8); /* קצת יותר אטימות כדי שייראה על רקע שחור */
+            background: rgba(255, 255, 255, 0.1); /* פאנל בהיר קל על רקע שחור */
             padding: 25px;
             border-radius: 20px;
             backdrop-filter: blur(10px);
             text-align: center;
             width: 80%;
-            max-width: 350px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 300px;
+            color: #fff; /* צבע טקסט לבן */
         }
         label {
             display: block;
-            margin-bottom: 20px;
-            font-size: 20px;
+            margin-bottom: 15px;
+            font-size: 18px;
             font-weight: bold;
-            color: #fff; /* צבע טקסט לבן */
         }
         input[type="range"] {
             width: 100%;
-            height: 12px; /* קצת יותר עבה */
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.2); /* סליידר שקוף למחצה */
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.3); /* סליידר שקוף למחצה */
             outline: none;
-            -webkit-appearance: none; /* מסיר עיצוב ברירת מחדל */
         }
-        
-        /* עיצוב ידית הסליידר (Apple Style) */
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 28px;
-            height: 28px;
-            background: #fff;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        }
-
         #status {
-            margin-top: 25px;
-            font-size: 15px;
+            margin-top: 20px;
+            font-size: 14px;
             color: rgba(255, 255, 255, 0.8);
-            opacity: 1; /* מוצג תמיד */
+            opacity: 0.8;
         }
     </style>
 </head>
 <body>
 
-    <div class="scene-container">
-        <div class="vader-display">&#129497;</div> <div class="lightsaber-v2"></div>
+    <div class="vader-scene">
+        <img src="image_4.png" class="vader-image" alt="Darth Vader">
+        <div class="lightsaber-warm"></div>
     </div>
 
     <div class="controls">
-        <label for="brightness">בהירות מנורה</label>
+        <label for="brightness">עוצמת אור מנורת הלילה</label>
         <input type="range" id="brightness" min="0.5" max="100" value="100">
-        <div id="status">המסך יישאר דלוק (גע כדי להפעיל)</div>
+        <div id="status">גע במסך כדי למנוע כיבוי</div>
     </div>
 
     <script>
         const brightnessSlider = document.getElementById('brightness');
-        const lightsaber = document.querySelector('.lightsaber-v2');
+        const vaderImage = document.querySelector('.vader-image');
+        const lightsaber = document.querySelector('.lightsaber-warm');
         const statusText = document.getElementById('status');
         let wakeLock = null;
 
         // ויסות בהירות
         brightnessSlider.addEventListener('input', (e) => {
-            const opacity = e.target.value / 100;
-            // שינוי אטימות החרב וההילה יחד
-            lightsaber.style.opacity = opacity;
-            
-            // שינוי קל של צבע הרקע לפי עוצמת האור כדי ליצור אפקט "מאיר את החדר"
-            // העוצמה המקסימלית תיתן רקע בהיר מאוד של אור חם
-            const backgroundLight = 255 * (e.target.value / 100);
-            document.body.style.backgroundColor = `rgba(255, 159, 0, ${opacity * 0.1})`; // 10% עוצמה מקסימלית לרקע
+            const val = e.target.value / 100;
+
+            // שינוי הבהירות של החרב וההילה
+            lightsaber.style.opacity = val;
+
+            // שינוי קל בבהירות הצללית כדי שתרגיש קצת יותר מוארת
+            vaderImage.style.filter = `brightness(${10 + 15 * val}%) opacity(90%)`; 
         });
 
         // פונקציה למניעת כיבוי מסך
