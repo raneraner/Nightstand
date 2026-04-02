@@ -23,37 +23,39 @@
         /* מכלול הסצנה של ויידר */
         .vader-scene {
             position: relative;
-            width: 80%;
-            max-width: 400px; /* כדי שלא יתפרש יותר מדי באייפד */
+            width: 90%; 
+            max-width: 450px;
             display: flex;
             flex-direction: column;
             align-items: center;
             margin-bottom: 60px;
+            /* טריק CSS כדי לגרום לרקע הלבן של התמונה להיעלם על רקע שחור */
+            mix-blend-mode: screen; 
         }
 
-        /* תמונת דארת ויידר */
+        /* תמונת דארת ויידר החדשה */
         .vader-image {
             width: 100%;
             height: auto;
-            /* הפכנו את התמונה לצללית עם פרטים כהים */
-            filter: brightness(10%) opacity(90%); 
+            /* הפכנו את התמונה לצללית דרמטית */
+            filter: brightness(20%) contrast(130%); 
             transition: all 0.2s ease;
         }
 
-        /* החרב האור המעודכנת - הילה חזקה בהרבה */
+        /* חרב האור החמה */
         .lightsaber-warm {
             position: absolute;
-            top: 61%; /* ממוקמת ביד */
-            left: 23%; /* ממוקמת ביד */
-            width: 4px;
-            height: 32%; /* אורכה של החרב */
+            top: 68%; /* ממוקמת ביד השמאלית הנמוכה */
+            left: 62%; /* ממוקמת ביד השמאלית הנמוכה */
+            width: 3px;
+            height: 38%; /* אורך החרב */
             background-color: #ffd700; /* צבע זהב/ענבר חם לליבה */
             border-radius: 4px;
-            /* הילה חמה רב-שכבתית וחזקה משמעותית - ערכים מוגדלים */
-            box-shadow: 0 0 25px rgba(255, 215, 0, 1), 0 0 50px rgba(255, 165, 0, 1), 0 0 100px rgba(255, 165, 0, 1), 0 0 160px rgba(255, 165, 0, 1);
-            transform: rotate(11deg); /* זווית שתתאים ליד */
-            transition: box-shadow 0.2s ease; /* אני משאיר transition רק ל-box-shadow */
-            opacity: 1; /* החרב (הליבה) עצמה נשארת מלאה */
+            /* הילה חמה דרמטית וחזקה המאירה את החדר */
+            box-shadow: 0 0 30px rgba(255, 215, 0, 1), 0 0 60px rgba(255, 165, 0, 1), 0 0 120px rgba(255, 165, 0, 1), 0 0 180px rgba(255, 165, 0, 1);
+            transform: rotate(35deg); /* זווית מעודכנת לתמונה החדשה */
+            transition: box-shadow 0.2s ease;
+            opacity: 1; /* ליבת החרב נשארת מלאה */
         }
 
         .controls {
@@ -112,18 +114,17 @@
             const val = e.target.value / 100;
 
             // הגדרת הילה חזקה ב-JS לשליטה בשקיפות
-            // אני משתמש ב-Template Literal כדי לשנות את ה-opacity (ה-val) של כל שכבה
             const glow = `
-                0 0 25px rgba(255, 215, 0, ${val}), 
-                0 0 50px rgba(255, 165, 0, ${val}), 
-                0 0 100px rgba(255, 165, 0, ${val}), 
-                0 0 160px rgba(255, 165, 0, ${val})
+                0 0 30px rgba(255, 215, 0, ${val}), 
+                0 0 60px rgba(255, 165, 0, ${val}), 
+                0 0 120px rgba(255, 165, 0, ${val}), 
+                0 0 180px rgba(255, 165, 0, ${val})
             `;
             lightsaber.style.boxShadow = glow;
 
             // שינוי קל בבהירות הצללית כדי שתרגיש קצת יותר מוארת כשההילה גבוהה
-            const vaderBrightness = 10 + 15 * val;
-            vaderImage.style.filter = `brightness(${vaderBrightness}%) opacity(90%)`; 
+            const vaderBrightness = 20 + 15 * val;
+            vaderImage.style.filter = `brightness(${vaderBrightness}%) contrast(130%)`; 
         });
 
         // פונקציה למניעת כיבוי מסך
