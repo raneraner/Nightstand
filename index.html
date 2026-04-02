@@ -20,7 +20,6 @@
             padding-bottom: 40px; 
         }
 
-        /* מכלול הסצנה - ממורכז למעלה ומתאים את עצמו */
         .vader-scene {
             position: absolute;
             top: 0;
@@ -34,7 +33,6 @@
             overflow: hidden;
         }
 
-        /* עטיפה השומרת על הפרופורציות - ברוחב 100% כדי למנוע שוליים */
         .image-wrapper {
             position: relative;
             width: 100%;
@@ -42,31 +40,33 @@
             display: block;
         }
 
-        /* התמונה מתאימה את הגובה שלה אוטומטית לפי הרוחב - אין שטח מת */
         .vader-image {
             display: block;
             width: 100%;
             height: auto;
             filter: brightness(20%) contrast(130%);
-            transition: filter 0.1s ease;
+            /* שינוי הבהירות ייעשה דרך transform כדי להיות חלק יותר */
+            transition: transform 0.1s ease, filter 0.1s ease;
         }
 
-        /* חרב האור - ממוקמת ביחס לתיבה המהודקת */
         .lightsaber-warm {
             position: absolute;
-            /* כאן מבצעים את הכיוונון העדין אם צריך */
-            top: 50%; 
-            right: 20%; 
-            width: 4px;
+            /* שימוש ב-transform למקום מוחלט ודיוק */
+            top: 50%;
+            left: 50%;
+            width: 8px; /* הרחבת החרב להתאמה לעובי המקורית */
             height: 48%; 
             background-color: #ffd700;
             border-radius: 4px;
             box-shadow: 0 0 30px rgba(255, 215, 0, 1), 0 0 60px rgba(255, 165, 0, 1), 0 0 120px rgba(255, 165, 0, 1);
-            transform: rotate(-45deg); 
             transform-origin: top center;
+            /* מיקום וזווית החרב לכיסוי מושלם */
+            transform: translate(-50%, -50%) translate(108px, -1px) rotate(45deg);
             opacity: 1;
             z-index: 2;
-            pointer-events: none; /* מונע לחיצות בטעות על החרב */
+            pointer-events: none;
+            /* דימר חלק באמצעות transition */
+            transition: opacity 0.1s ease, box-shadow 0.1s ease;
         }
 
         .controls {
@@ -129,7 +129,6 @@
         brightnessSlider.addEventListener('input', (e) => {
             const val = e.target.value / 100;
 
-            // 1. סנכרון הילת החרב
             const glow = `
                 0 0 30px rgba(255, 215, 0, ${val}), 
                 0 0 60px rgba(255, 165, 0, ${val}), 
@@ -137,12 +136,9 @@
             `;
             lightsaber.style.boxShadow = glow;
 
-            // 2. סנכרון אטימות החרב הצהובה עצמה (תיעלם בחושך מוחלט)
+            // שינוי הבהירות באמצעות transform לדימר חלק יותר
             lightsaber.style.opacity = val;
-
-            // 3. סנכרון בהירות התמונה המקורית (כדי להעלים את החרב האדומה שברקע)
-            // כשערך הסליידר הוא 0, הבהירות היא 0% (שחור). כשערך הסליידר הוא 1, הבהירות חוזרת ל-20%.
-            vaderImage.style.filter = `brightness(${val * 20}%) contrast(130%)`; 
+            vaderImage.style.filter = `brightness(${20 + (val * 15)}%) contrast(130%)`; 
         });
 
         async function requestWakeLock() {
