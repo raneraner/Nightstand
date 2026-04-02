@@ -8,7 +8,7 @@
         body {
             margin: 0;
             padding: 0;
-            height: 100vh;
+            height: 100dvh; /* תיקון לאייפון: גובה דינמי שמונע חיתוך למטה */
             display: flex;
             flex-direction: column;
             justify-content: flex-end; 
@@ -17,16 +17,15 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             overflow: hidden;
             touch-action: none;
-            padding-bottom: 40px; 
+            padding-bottom: env(safe-area-inset-bottom, 20px); /* מרווח בטיחות תחתון */
         }
 
-        /* סצנה שתופסת 80% מהגובה וחותכת מה שגולש לצדדים */
         .vader-scene {
             position: absolute;
             top: 0;
             left: 0;
             width: 100vw;
-            height: 80vh;
+            height: 80dvh; /* הותאם לגובה דינמי */
             display: flex;
             justify-content: center;
             align-items: flex-end; 
@@ -34,14 +33,12 @@
             overflow: hidden;
         }
 
-        /* התיבה עוטפת את התמונה בדיוק מוחלט */
         .image-wrapper {
             position: relative;
             height: 100%; 
             display: inline-block;
         }
 
-        /* התמונה נמתחת לגובה המקסימלי */
         .vader-image {
             display: block;
             height: 100%;
@@ -50,13 +47,13 @@
             transition: filter 0.1s ease;
         }
 
-        /* קואורדינטות מחושבות במדויק על בסיס פיקסלים מהתמונה המקורית */
+        /* הקואורדינטות המדויקות שלך נשמרו */
         .lightsaber-warm {
             position: absolute;
             bottom: 17.5%; 
             left: 50%; 
             
-            width: 2%; /* עובי שנועד להסתיר לחלוטין את האדומה */
+            width: 2%; 
             height: 55%; 
             
             background-color: #ffd700;
@@ -81,7 +78,7 @@
             max-width: 350px;
             color: #fff;
             z-index: 10;
-            margin-bottom: 20px; 
+            margin-bottom: 50px; /* הרחקתי את זה עוד קצת מהתחתית בשביל אפליקציית הרשת */
         }
         
         label {
