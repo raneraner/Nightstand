@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>מנורת לילה</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: rgb(255, 170, 0); /* צבע אור חם */
+            transition: background-color 0.2s ease;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+            touch-action: none;
+        }
+        .lamp-icon {
+            font-size: 120px;
+            margin-bottom: 60px;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+            user-select: none;
+        }
+        .controls {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+            width: 80%;
+            max-width: 300px;
+        }
+        label {
+            display: block;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+        }
+        #status {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #444;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="lamp-icon">💡</div>
+
+    <div class="controls">
+        <label for="brightness">עוצמת האור</label>
+        <input type="range" id="brightness" min="5" max="100" value="100">
+        <div id="status">גע במסך כדי למנוע כיבוי</div>
+    </div>
+
+    <script>
+        const brightnessSlider = document.getElementById('brightness');
+        const body = document.body;
+        const statusText = document.getElementById('status');
+        let wakeLock = null;
+
+        // ויסות בהירות
+        brightnessSlider.addEventListener('input', (e) => {
+            const opacity = e.target.value / 100;
+            // שינוי השקיפות של הצבע הכתום-צהוב
+            body.style.backgroundColor = `rgba(255, 170, 0, ${opacity})`;
+        });
+
+        // פונקציה למניעת כיבוי מסך
+        async function requestWakeLock() {
+            try {
+                wakeLock = await navigator.wakeLock.request('screen');
+                statusText.innerText = 'מצב שינה בוטל - המסך יישאר דלוק';
+            } catch (err) {
+                statusText.innerText = 'לא ניתן לחסום את כיבוי המסך';
+            }
+        }
+
+        // האייפון דורש אינטראקציה ראשונית של המשתמש כדי לאשר פעולות רקע
+        document.addEventListener('click', () => {
+            if (!wakeLock) {
+                requestWakeLock();
+            }
+        }, { once: true });
+
+        // חידוש החסימה אם המשתמש יוצא מהדפדפן וחוזר
+        document.addEventListener('visibilitychange', () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+                requestWakeLock();
+            }
+        });
+    </script>
+</body>
+</html>
