@@ -8,7 +8,7 @@
         body {
             margin: 0;
             padding: 0;
-            height: 100vh;
+            height: 100dvh; /* גובה דינמי שמונע חיתוך במסך מלא */
             display: flex;
             flex-direction: column;
             justify-content: flex-end; 
@@ -17,7 +17,8 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             overflow: hidden;
             touch-action: none;
-            padding-bottom: 40px; 
+            /* מרווח בטיחות תחתון ייעודי לאייפון ועוד תוספת קטנה */
+            padding-bottom: calc(env(safe-area-inset-bottom) + 40px); 
         }
 
         .vader-scene {
@@ -25,7 +26,7 @@
             top: 0;
             left: 0;
             width: 100vw;
-            height: 80vh;
+            height: 80dvh; /* מותאם לגובה הדינמי */
             display: flex;
             justify-content: center;
             align-items: flex-end; 
@@ -78,15 +79,13 @@
             color: #fff;
             z-index: 10;
             margin-bottom: 20px; 
-            /* הוספת אנימציית העלמה חלקה */
             transition: opacity 0.5s ease;
             opacity: 1;
         }
 
-        /* מחלקה שנוספת כשצריך להעלים את הפאנל */
         .controls.hidden {
             opacity: 0;
-            pointer-events: none; /* מונע לחיצות בטעות כשהפאנל מוסתר */
+            pointer-events: none; 
         }
         
         input[type="range"] {
@@ -130,29 +129,20 @@
         let wakeLock = null;
         let hideTimeout = null;
 
-        // מנגנון העלמת הפאנל
         function resetHideTimer() {
-            // הצג את הפאנל
             controlsPanel.classList.remove('hidden');
-            
-            // נקה את הטיימר הקודם
             clearTimeout(hideTimeout);
-            
-            // התחל ספירה מחדש של 4 שניות
             hideTimeout = setTimeout(() => {
                 controlsPanel.classList.add('hidden');
             }, 4000);
         }
 
-        // האזנה לכל מגע או תזוזה על המסך כדי לאפס את הטיימר
         document.addEventListener('touchstart', resetHideTimer);
         document.addEventListener('mousemove', resetHideTimer);
         document.addEventListener('click', resetHideTimer);
 
-        // הפעלת הטיימר ברגע שהדף נטען
         resetHideTimer();
 
-        // שליטה בבהירות
         brightnessSlider.addEventListener('input', (e) => {
             const val = e.target.value / 100;
 
@@ -166,7 +156,6 @@
             vaderImage.style.filter = `brightness(${val * 20}%) contrast(130%)`; 
         });
 
-        // מנגנון נעילת מסך
         async function requestWakeLock() {
             try {
                 wakeLock = await navigator.wakeLock.request('screen');
@@ -182,7 +171,7 @@
         }
 
         statusText.addEventListener('click', async (e) => {
-            e.stopPropagation(); // מונע מנגיעה בכפתור לאפס דברים אחרים בטעות
+            e.stopPropagation(); 
             if (wakeLock !== null) {
                 await wakeLock.release();
             } else {
