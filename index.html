@@ -13,11 +13,12 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background-color: #050505; /* כמעט שחור לחלוטין */
+            background-color: #030303; /* כמעט שחור לחלוטין */
             transition: background-color 0.2s ease;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             overflow: hidden;
             touch-action: none;
+            color: #fff;
         }
 
         /* מכלול הסצנה במרכז */
@@ -25,97 +26,94 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-bottom: 60px;
+            margin-bottom: 40px; /* קצת יותר קרוב לסליידר */
             position: relative;
         }
 
-        /* צללית דארת ויידר פשוטה ומחויכת */
-        .vader-silhouette {
-            width: 140px;
-            height: 180px;
-            background-color: #0a0a0a; /* צללית כהה */
-            border-radius: 50% 50% 10px 10px; /* פשטת הקסדה */
-            opacity: 0.9;
+        /* דארת ויידר - דורש פונט תואם, או תמונה, אבל כאן ניצור אותו ב-CSS/פונט כדי לשמור על קובץ בודד */
+        .vader-display {
+            font-size: 200px; /* גודל גדול */
             position: relative;
+            line-height: 1;
+            user-select: none;
+            cursor: default;
         }
 
-        /* משולש הפה הפשטני */
-        .vader-silhouette::before { 
-            content: '';
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 20px solid transparent;
-            border-right: 20px solid transparent;
-            border-bottom: 30px solid #000;
-            opacity: 0.8;
-        }
-
-        /* החרב האור האופיינית */
-        .lightsaber {
-            width: 12px;
-            height: 140px;
-            background-color: #ffca3a; /* צבע אור חם, זהב/ענבר */
+        /* חרב אור בצבע אור חם - כתום/זהב */
+        .lightsaber-v2 {
+            width: 15px;
+            height: 250px;
+            background-color: #ff9f00; /* צבע אור חם, כתום-זהב */
             border-radius: 10px;
             position: absolute;
-            bottom: -20px;
-            left: 15px; /* ממוקמת ב"יד" */
+            bottom: -30px; /* ממוקמת ב"יד" */
+            left: 20px; /* ממוקמת ב"יד" */
             /* ההילה החמה החזקה - מקור האור */
-            box-shadow: 0 0 20px #ffca3a, 0 0 40px #ffca3a, 0 0 60px #ffca3a, 0 0 80px #ffca3a;
+            box-shadow: 0 0 30px #ff9f00, 0 0 50px #ff9f00, 0 0 70px #ff9f00, 0 0 100px #ff9f00;
             opacity: 1; /* אטימות מלאה כברירת מחדל */
             transition: opacity 0.2s ease;
         }
 
         .controls {
-            background: rgba(0, 0, 0, 0.3); /* קצת יותר אטימות כדי שייראה על רקע שחור */
+            background: rgba(10, 10, 10, 0.8); /* קצת יותר אטימות כדי שייראה על רקע שחור */
             padding: 25px;
             border-radius: 20px;
             backdrop-filter: blur(10px);
             text-align: center;
             width: 80%;
-            max-width: 300px;
+            max-width: 350px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         label {
             display: block;
-            margin-bottom: 15px;
-            font-size: 18px;
+            margin-bottom: 20px;
+            font-size: 20px;
             font-weight: bold;
             color: #fff; /* צבע טקסט לבן */
         }
         input[type="range"] {
             width: 100%;
-            height: 8px;
-            border-radius: 5px;
-            background: rgba(255, 255, 255, 0.3); /* סליידר שקוף למחצה */
+            height: 12px; /* קצת יותר עבה */
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2); /* סליידר שקוף למחצה */
             outline: none;
+            -webkit-appearance: none; /* מסיר עיצוב ברירת מחדל */
         }
+        
+        /* עיצוב ידית הסליידר (Apple Style) */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 28px;
+            height: 28px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
         #status {
-            margin-top: 20px;
-            font-size: 14px;
+            margin-top: 25px;
+            font-size: 15px;
             color: rgba(255, 255, 255, 0.8);
-            opacity: 0.8;
+            opacity: 1; /* מוצג תמיד */
         }
     </style>
 </head>
 <body>
 
     <div class="scene-container">
-        <div class="vader-silhouette"></div>
-        <div class="lightsaber"></div>
+        <div class="vader-display">&#129497;</div> <div class="lightsaber-v2"></div>
     </div>
 
     <div class="controls">
-        <label for="brightness">עוצמת האור מהחרב</label>
+        <label for="brightness">בהירות מנורה</label>
         <input type="range" id="brightness" min="0.5" max="100" value="100">
-        <div id="status">גע במסך כדי למנוע כיבוי</div>
+        <div id="status">המסך יישאר דלוק (גע כדי להפעיל)</div>
     </div>
 
     <script>
         const brightnessSlider = document.getElementById('brightness');
-        const lightsaber = document.querySelector('.lightsaber');
+        const lightsaber = document.querySelector('.lightsaber-v2');
         const statusText = document.getElementById('status');
         let wakeLock = null;
 
@@ -124,6 +122,11 @@
             const opacity = e.target.value / 100;
             // שינוי אטימות החרב וההילה יחד
             lightsaber.style.opacity = opacity;
+            
+            // שינוי קל של צבע הרקע לפי עוצמת האור כדי ליצור אפקט "מאיר את החדר"
+            // העוצמה המקסימלית תיתן רקע בהיר מאוד של אור חם
+            const backgroundLight = 255 * (e.target.value / 100);
+            document.body.style.backgroundColor = `rgba(255, 159, 0, ${opacity * 0.1})`; // 10% עוצמה מקסימלית לרקע
         });
 
         // פונקציה למניעת כיבוי מסך
