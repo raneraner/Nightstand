@@ -11,86 +11,92 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end; /* דוחף את הפאנל לתחתית המסך */
+            justify-content: flex-end; 
             align-items: center;
-            background-color: #000; 
+            background-color: #000;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             overflow: hidden;
             touch-action: none;
-            padding-bottom: 40px; /* מרווח בטיחות תחתון לאייפון */
+            padding-bottom: 40px; 
         }
 
-        /* מכלול הסצנה של ויידר */
+        /* מכלול הסצנה - ממורכז למעלה ומתאים את עצמו */
         .vader-scene {
             position: absolute;
             top: 0;
-            width: 100%; 
-            height: 85vh; /* תופס 85% מהמסך העליון כדי לנצל את המסך הגדול */
+            width: 100%;
             display: flex;
             justify-content: center;
-            align-items: center;
-            mix-blend-mode: screen; 
-            z-index: 1; 
+            align-items: flex-start;
+            mix-blend-mode: screen;
+            z-index: 1;
+            max-height: 80vh;
+            overflow: hidden;
         }
 
-        /* קונטיינר עוטף שומר על הפרופורציות והמיקום */
+        /* עטיפה השומרת על הפרופורציות - ברוחב 100% כדי למנוע שוליים */
         .image-wrapper {
             position: relative;
-            height: 100%;
-            display: inline-flex;
+            width: 100%;
+            max-width: 450px;
+            display: block;
         }
 
-        /* תמונת דארת ויידר */
+        /* התמונה מתאימה את הגובה שלה אוטומטית לפי הרוחב - אין שטח מת */
         .vader-image {
-            height: 100%;
-            width: auto;
-            object-fit: contain;
-            filter: brightness(20%) contrast(130%); 
-            transition: filter 0.2s ease;
+            display: block;
+            width: 100%;
+            height: auto;
+            filter: brightness(20%) contrast(130%);
+            transition: filter 0.1s ease;
         }
 
-        /* חרב האור החמה - מיקום מעודכן על החרב המקורית */
+        /* חרב האור - ממוקמת ביחס לתיבה המהודקת */
         .lightsaber-warm {
             position: absolute;
-            bottom: 14%; 
-            left: 54%; 
-            width: 5px; 
-            height: 52%; 
-            background-color: #ffd700; 
+            /* כאן מבצעים את הכיוונון העדין אם צריך */
+            top: 50%; 
+            right: 20%; 
+            width: 4px;
+            height: 48%; 
+            background-color: #ffd700;
             border-radius: 4px;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 1), 0 0 60px rgba(255, 165, 0, 1), 0 0 120px rgba(255, 165, 0, 1), 0 0 180px rgba(255, 165, 0, 1);
-            transform: rotate(53deg); 
-            transform-origin: bottom center; 
-            transition: all 0.2s ease;
-            opacity: 1; 
-            z-index: 2; 
+            box-shadow: 0 0 30px rgba(255, 215, 0, 1), 0 0 60px rgba(255, 165, 0, 1), 0 0 120px rgba(255, 165, 0, 1);
+            transform: rotate(-45deg); 
+            transform-origin: top center;
+            opacity: 1;
+            z-index: 2;
+            pointer-events: none; /* מונע לחיצות בטעות על החרב */
         }
 
         .controls {
-            background: rgba(255, 255, 255, 0.1); 
+            background: rgba(255, 255, 255, 0.1);
             padding: 15px 20px;
             border-radius: 15px;
             backdrop-filter: blur(10px);
             text-align: center;
             width: 85%;
             max-width: 350px;
-            color: #fff; 
-            z-index: 10; 
+            color: #fff;
+            z-index: 10;
             margin-bottom: 20px;
         }
+        
         label {
             display: block;
             margin-bottom: 10px;
             font-size: 16px;
             font-weight: bold;
         }
+        
         input[type="range"] {
             width: 100%;
             height: 6px;
             border-radius: 5px;
-            background: rgba(255, 255, 255, 0.3); 
+            background: rgba(255, 255, 255, 0.3);
             outline: none;
         }
+        
         #status {
             margin-top: 10px;
             font-size: 12px;
@@ -108,7 +114,7 @@
     </div>
 
     <div class="controls">
-        <label for="brightness">עוצמת אור מנורת הלילה</label>
+        <label for="brightness">עוצמת מנורת לילה</label>
         <input type="range" id="brightness" min="0" max="100" value="100">
         <div id="status">גע במסך כדי למנוע כיבוי</div>
     </div>
@@ -120,27 +126,25 @@
         const statusText = document.getElementById('status');
         let wakeLock = null;
 
-        // ויסות בהירות מלא מאפס למאה
         brightnessSlider.addEventListener('input', (e) => {
             const val = e.target.value / 100;
 
-            // החלשת הילת החרב
+            // 1. סנכרון הילת החרב
             const glow = `
                 0 0 30px rgba(255, 215, 0, ${val}), 
                 0 0 60px rgba(255, 165, 0, ${val}), 
-                0 0 120px rgba(255, 165, 0, ${val}), 
-                0 0 180px rgba(255, 165, 0, ${val})
+                0 0 120px rgba(255, 165, 0, ${val})
             `;
             lightsaber.style.boxShadow = glow;
 
-            // החשכת הליבה הצהובה כדי שלא תיראה בחושך
+            // 2. סנכרון אטימות החרב הצהובה עצמה (תיעלם בחושך מוחלט)
             lightsaber.style.opacity = val;
 
-            // החשכת התמונה עצמה לאפס (שחור מוחלט) כדי להעלים את החרב האדומה
-            vaderImage.style.filter = `brightness(${val * 25}%) contrast(130%)`; 
+            // 3. סנכרון בהירות התמונה המקורית (כדי להעלים את החרב האדומה שברקע)
+            // כשערך הסליידר הוא 0, הבהירות היא 0% (שחור). כשערך הסליידר הוא 1, הבהירות חוזרת ל-20%.
+            vaderImage.style.filter = `brightness(${val * 20}%) contrast(130%)`; 
         });
 
-        // פונקציה למניעת כיבוי מסך
         async function requestWakeLock() {
             try {
                 wakeLock = await navigator.wakeLock.request('screen');
@@ -150,14 +154,12 @@
             }
         }
 
-        // האייפון דורש אינטראקציה ראשונית
         document.addEventListener('click', () => {
             if (!wakeLock) {
                 requestWakeLock();
             }
         }, { once: true });
 
-        // חידוש החסימה
         document.addEventListener('visibilitychange', () => {
             if (wakeLock !== null && document.visibilityState === 'visible') {
                 requestWakeLock();
