@@ -11,64 +11,57 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end; 
+            justify-content: space-between; 
             align-items: center;
             background-color: #000;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             overflow: hidden;
             touch-action: none;
-            padding-bottom: 40px; 
         }
 
         .vader-scene {
-            position: absolute;
-            top: 0;
+            position: relative;
+            flex: 1; /* לוקח את כל הגובה הזמין מעל פאנל השליטה */
             width: 100%;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
+            align-items: flex-end; /* מצמיד את התמונה למטה */
             mix-blend-mode: screen;
-            z-index: 1;
-            max-height: 80vh;
             overflow: hidden;
+            padding-top: 50px; 
         }
 
         .image-wrapper {
             position: relative;
-            width: 100%;
-            max-width: 450px;
-            display: block;
-            line-height: 0; /* מונע רווחים שקופים מתחת לתמונה */
+            height: 100%; /* הגובה נקבע לפי הסצנה, הרוחב מתעדכן אוטומטית */
+            display: inline-block;
         }
 
         .vader-image {
             display: block;
-            width: 100%;
-            height: auto;
+            height: 100%;
+            width: auto;
             filter: brightness(20%) contrast(130%);
-            transition: filter 0.1s ease;
         }
 
         .lightsaber-warm {
             position: absolute;
-            /* נעץ המיקום - ידית החרב */
-            bottom: 15%; /* גובה מתחתית התמונה (שחק עם זה מעלה-מטה) */
-            left: 52%;   /* מרחק משמאל (שחק עם זה ימינה-שמאלה) */
+            bottom: 12%; 
+            left: 63.5%; 
             
-            width: 1.5%; /* עובי החרב באחוזים */
-            height: 60%; /* אורך החרב באחוזים */
+            width: 1.5%; /* עובי יחסי */
+            height: 55%; /* אורך יחסי */
             
             background-color: #ffd700;
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(255, 215, 0, 1), 0 0 40px rgba(255, 165, 0, 1), 0 0 80px rgba(255, 165, 0, 1);
             
-            transform-origin: bottom center; /* קריטי: הסיבוב מחושב מתחתית החרב */
-            transform: rotate(52deg); /* זווית ההטיה (שחק עם זה לשיפוע) */
+            transform-origin: bottom center; 
+            transform: rotate(50deg); 
             
             opacity: 1;
             z-index: 2;
             pointer-events: none;
-            transition: opacity 0.1s linear, box-shadow 0.1s linear;
         }
 
         .controls {
@@ -81,7 +74,7 @@
             max-width: 350px;
             color: #fff;
             z-index: 10;
-            margin-bottom: 20px;
+            margin-bottom: 40px; 
         }
         
         label {
@@ -127,7 +120,6 @@
         const lightsaber = document.querySelector('.lightsaber-warm');
         let wakeLock = null;
 
-        // דימר שמוריד הכל לחושך מוחלט בצורה חלקה
         brightnessSlider.addEventListener('input', (e) => {
             const val = e.target.value / 100;
 
