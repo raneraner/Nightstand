@@ -78,6 +78,15 @@
             color: #fff;
             z-index: 10;
             margin-bottom: 20px; 
+            /* הוספת אנימציית העלמה חלקה */
+            transition: opacity 0.5s ease;
+            opacity: 1;
+        }
+
+        /* מחלקה שנוספת כשצריך להעלים את הפאנל */
+        .controls.hidden {
+            opacity: 0;
+            pointer-events: none; /* מונע לחיצות בטעות כשהפאנל מוסתר */
         }
         
         input[type="range"] {
@@ -107,7 +116,7 @@
         </div>
     </div>
 
-    <div class="controls">
+    <div class="controls" id="controls-panel">
         <input type="range" id="brightness" min="0" max="100" value="100" dir="ltr">
         <div id="status">נעילת מסך ✅</div>
     </div>
@@ -117,8 +126,33 @@
         const vaderImage = document.querySelector('.vader-image');
         const lightsaber = document.querySelector('.lightsaber-warm');
         const statusText = document.getElementById('status');
+        const controlsPanel = document.getElementById('controls-panel');
         let wakeLock = null;
+        let hideTimeout = null;
 
+        // מנגנון העלמת הפאנל
+        function resetHideTimer() {
+            // הצג את הפאנל
+            controlsPanel.classList.remove('hidden');
+            
+            // נקה את הטיימר הקודם
+            clearTimeout(hideTimeout);
+            
+            // התחל ספירה מחדש של 4 שניות
+            hideTimeout = setTimeout(() => {
+                controlsPanel.classList.add('hidden');
+            }, 4000);
+        }
+
+        // האזנה לכל מגע או תזוזה על המסך כדי לאפס את הטיימר
+        document.addEventListener('touchstart', resetHideTimer);
+        document.addEventListener('mousemove', resetHideTimer);
+        document.addEventListener('click', resetHideTimer);
+
+        // הפעלת הטיימר ברגע שהדף נטען
+        resetHideTimer();
+
+        // שליטה בבהירות
         brightnessSlider.addEventListener('input', (e) => {
             const val = e.target.value / 100;
 
@@ -132,6 +166,7 @@
             vaderImage.style.filter = `brightness(${val * 20}%) contrast(130%)`; 
         });
 
+        // מנגנון נעילת מסך
         async function requestWakeLock() {
             try {
                 wakeLock = await navigator.wakeLock.request('screen');
@@ -146,7 +181,8 @@
             }
         }
 
-        statusText.addEventListener('click', async () => {
+        statusText.addEventListener('click', async (e) => {
+            e.stopPropagation(); // מונע מנגיעה בכפתור לאפס דברים אחרים בטעות
             if (wakeLock !== null) {
                 await wakeLock.release();
             } else {
