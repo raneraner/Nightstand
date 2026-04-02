@@ -35,25 +35,25 @@
         .vader-image {
             width: 100%;
             height: auto;
-            /* הפכנו את התמונה לכהה מאוד - צללית עם פרטים מרומזים */
+            /* הפכנו את התמונה לצללית עם פרטים כהים */
             filter: brightness(10%) opacity(90%); 
             transition: all 0.2s ease;
         }
 
-        /* החרב האור הריאליסטית והחמה */
+        /* החרב האור המעודכנת - הילה חזקה בהרבה */
         .lightsaber-warm {
             position: absolute;
             top: 61%; /* ממוקמת ביד */
             left: 23%; /* ממוקמת ביד */
             width: 4px;
             height: 32%; /* אורכה של החרב */
-            background-color: #ffd700; /* צבע זהב/ענבר חם */
+            background-color: #ffd700; /* צבע זהב/ענבר חם לליבה */
             border-radius: 4px;
-            /* הילה חמה רב-שכבתית וחזקה */
-            box-shadow: 0 0 15px #ffd700, 0 0 30px #ffa500, 0 0 60px #ffa500, 0 0 90px #ffa500;
+            /* הילה חמה רב-שכבתית וחזקה משמעותית - ערכים מוגדלים */
+            box-shadow: 0 0 25px rgba(255, 215, 0, 1), 0 0 50px rgba(255, 165, 0, 1), 0 0 100px rgba(255, 165, 0, 1), 0 0 160px rgba(255, 165, 0, 1);
             transform: rotate(11deg); /* זווית שתתאים ליד */
-            transition: all 0.2s ease;
-            opacity: 1; /* אטימות מלאה */
+            transition: box-shadow 0.2s ease; /* אני משאיר transition רק ל-box-shadow */
+            opacity: 1; /* החרב (הליבה) עצמה נשארת מלאה */
         }
 
         .controls {
@@ -107,15 +107,23 @@
         const statusText = document.getElementById('status');
         let wakeLock = null;
 
-        // ויסות בהירות
+        // ויסות בהירות - שולט על עוצמת ההילה (Box-Shadow) בלבד
         brightnessSlider.addEventListener('input', (e) => {
             const val = e.target.value / 100;
 
-            // שינוי הבהירות של החרב וההילה
-            lightsaber.style.opacity = val;
+            // הגדרת הילה חזקה ב-JS לשליטה בשקיפות
+            // אני משתמש ב-Template Literal כדי לשנות את ה-opacity (ה-val) של כל שכבה
+            const glow = `
+                0 0 25px rgba(255, 215, 0, ${val}), 
+                0 0 50px rgba(255, 165, 0, ${val}), 
+                0 0 100px rgba(255, 165, 0, ${val}), 
+                0 0 160px rgba(255, 165, 0, ${val})
+            `;
+            lightsaber.style.boxShadow = glow;
 
-            // שינוי קל בבהירות הצללית כדי שתרגיש קצת יותר מוארת
-            vaderImage.style.filter = `brightness(${10 + 15 * val}%) opacity(90%)`; 
+            // שינוי קל בבהירות הצללית כדי שתרגיש קצת יותר מוארת כשההילה גבוהה
+            const vaderBrightness = 10 + 15 * val;
+            vaderImage.style.filter = `brightness(${vaderBrightness}%) opacity(90%)`; 
         });
 
         // פונקציה למניעת כיבוי מסך
