@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>מנורת לילה</title>
+    <title>מנורת לילה דארת ויידר</title>
     <style>
         body {
             margin: 0;
@@ -13,20 +13,64 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background-color: rgb(255, 170, 0); /* צבע אור חם */
+            background-color: #050505; /* כמעט שחור לחלוטין */
             transition: background-color 0.2s ease;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             overflow: hidden;
             touch-action: none;
         }
-        .lamp-icon {
-            font-size: 120px;
+
+        /* מכלול הסצנה במרכז */
+        .scene-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             margin-bottom: 60px;
-            text-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
-            user-select: none;
+            position: relative;
         }
+
+        /* צללית דארת ויידר פשוטה ומחויכת */
+        .vader-silhouette {
+            width: 140px;
+            height: 180px;
+            background-color: #0a0a0a; /* צללית כהה */
+            border-radius: 50% 50% 10px 10px; /* פשטת הקסדה */
+            opacity: 0.9;
+            position: relative;
+        }
+
+        /* משולש הפה הפשטני */
+        .vader-silhouette::before { 
+            content: '';
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-bottom: 30px solid #000;
+            opacity: 0.8;
+        }
+
+        /* החרב האור האופיינית */
+        .lightsaber {
+            width: 12px;
+            height: 140px;
+            background-color: #ffca3a; /* צבע אור חם, זהב/ענבר */
+            border-radius: 10px;
+            position: absolute;
+            bottom: -20px;
+            left: 15px; /* ממוקמת ב"יד" */
+            /* ההילה החמה החזקה - מקור האור */
+            box-shadow: 0 0 20px #ffca3a, 0 0 40px #ffca3a, 0 0 60px #ffca3a, 0 0 80px #ffca3a;
+            opacity: 1; /* אטימות מלאה כברירת מחדל */
+            transition: opacity 0.2s ease;
+        }
+
         .controls {
-            background: rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.3); /* קצת יותר אטימות כדי שייראה על רקע שחור */
             padding: 25px;
             border-radius: 20px;
             backdrop-filter: blur(10px);
@@ -39,44 +83,47 @@
             margin-bottom: 15px;
             font-size: 18px;
             font-weight: bold;
-            color: #333;
+            color: #fff; /* צבע טקסט לבן */
         }
         input[type="range"] {
             width: 100%;
             height: 8px;
             border-radius: 5px;
-            background: #ddd;
+            background: rgba(255, 255, 255, 0.3); /* סליידר שקוף למחצה */
             outline: none;
         }
         #status {
             margin-top: 20px;
             font-size: 14px;
-            color: #444;
+            color: rgba(255, 255, 255, 0.8);
             opacity: 0.8;
         }
     </style>
 </head>
 <body>
 
-    <div class="lamp-icon">💡</div>
+    <div class="scene-container">
+        <div class="vader-silhouette"></div>
+        <div class="lightsaber"></div>
+    </div>
 
     <div class="controls">
-        <label for="brightness">עוצמת האור</label>
-        <input type="range" id="brightness" min="5" max="100" value="100">
+        <label for="brightness">עוצמת האור מהחרב</label>
+        <input type="range" id="brightness" min="0.5" max="100" value="100">
         <div id="status">גע במסך כדי למנוע כיבוי</div>
     </div>
 
     <script>
         const brightnessSlider = document.getElementById('brightness');
-        const body = document.body;
+        const lightsaber = document.querySelector('.lightsaber');
         const statusText = document.getElementById('status');
         let wakeLock = null;
 
         // ויסות בהירות
         brightnessSlider.addEventListener('input', (e) => {
             const opacity = e.target.value / 100;
-            // שינוי השקיפות של הצבע הכתום-צהוב
-            body.style.backgroundColor = `rgba(255, 170, 0, ${opacity})`;
+            // שינוי אטימות החרב וההילה יחד
+            lightsaber.style.opacity = opacity;
         });
 
         // פונקציה למניעת כיבוי מסך
