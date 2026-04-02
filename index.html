@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>מנורת לילה</title>
+    <title>מנורת לילה דארת ויידר</title>
     <style>
         body {
             margin: 0;
@@ -11,67 +11,71 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end; /* דוחף את הפאנל לתחתית */
+            justify-content: flex-end; /* דוחף את הפאנל לתחתית המסך */
             align-items: center;
-            background-color: #000;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #000; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             overflow: hidden;
             touch-action: none;
             padding-bottom: 40px; /* מרווח בטיחות תחתון לאייפון */
         }
 
+        /* מכלול הסצנה של ויידר */
         .vader-scene {
             position: absolute;
             top: 0;
-            width: 100%;
-            height: 85vh; /* תופס 85% מהמסך העליון */
+            width: 100%; 
+            height: 85vh; /* תופס 85% מהמסך העליון כדי לנצל את המסך הגדול */
             display: flex;
             justify-content: center;
             align-items: center;
-            mix-blend-mode: screen;
-            z-index: 1;
+            mix-blend-mode: screen; 
+            z-index: 1; 
         }
 
-        /* עטיפה השומרת על הפרופורציות. קריטי כדי שהחרב תישאר במקום */
+        /* קונטיינר עוטף שומר על הפרופורציות והמיקום */
         .image-wrapper {
             position: relative;
             height: 100%;
             display: inline-flex;
         }
 
+        /* תמונת דארת ויידר */
         .vader-image {
             height: 100%;
             width: auto;
             object-fit: contain;
-            filter: brightness(20%) contrast(130%);
+            filter: brightness(20%) contrast(130%); 
+            transition: filter 0.2s ease;
         }
 
-        /* חרב האור - ממוקמת ומסובבת בדיוק על החרב המקורית */
+        /* חרב האור החמה - מיקום מעודכן על החרב המקורית */
         .lightsaber-warm {
             position: absolute;
-            bottom: 14%; /* גובה החרב */
-            left: 54%; /* מיקום אופקי */
-            width: 5px;
-            height: 52%; /* אורך החרב */
-            background-color: #ffd700;
+            bottom: 14%; 
+            left: 54%; 
+            width: 5px; 
+            height: 52%; 
+            background-color: #ffd700; 
             border-radius: 4px;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 1), 0 0 60px rgba(255, 165, 0, 1), 0 0 120px rgba(255, 165, 0, 1);
-            transform: rotate(53deg); /* זווית החפיפה */
-            transform-origin: bottom center;
-            transition: box-shadow 0.2s ease;
-            opacity: 1;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 1), 0 0 60px rgba(255, 165, 0, 1), 0 0 120px rgba(255, 165, 0, 1), 0 0 180px rgba(255, 165, 0, 1);
+            transform: rotate(53deg); 
+            transform-origin: bottom center; 
+            transition: all 0.2s ease;
+            opacity: 1; 
+            z-index: 2; 
         }
 
         .controls {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px 20px; /* פאנל קומפקטי יותר */
+            background: rgba(255, 255, 255, 0.1); 
+            padding: 15px 20px;
             border-radius: 15px;
             backdrop-filter: blur(10px);
             text-align: center;
             width: 85%;
             max-width: 350px;
-            color: #fff;
-            z-index: 10;
+            color: #fff; 
+            z-index: 10; 
             margin-bottom: 20px;
         }
         label {
@@ -84,7 +88,7 @@
             width: 100%;
             height: 6px;
             border-radius: 5px;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.3); 
             outline: none;
         }
         #status {
@@ -104,8 +108,8 @@
     </div>
 
     <div class="controls">
-        <label for="brightness">עוצמת מנורת לילה</label>
-        <input type="range" id="brightness" min="0.5" max="100" value="100">
+        <label for="brightness">עוצמת אור מנורת הלילה</label>
+        <input type="range" id="brightness" min="0" max="100" value="100">
         <div id="status">גע במסך כדי למנוע כיבוי</div>
     </div>
 
@@ -116,17 +120,27 @@
         const statusText = document.getElementById('status');
         let wakeLock = null;
 
+        // ויסות בהירות מלא מאפס למאה
         brightnessSlider.addEventListener('input', (e) => {
             const val = e.target.value / 100;
+
+            // החלשת הילת החרב
             const glow = `
                 0 0 30px rgba(255, 215, 0, ${val}), 
                 0 0 60px rgba(255, 165, 0, ${val}), 
-                0 0 120px rgba(255, 165, 0, ${val})
+                0 0 120px rgba(255, 165, 0, ${val}), 
+                0 0 180px rgba(255, 165, 0, ${val})
             `;
             lightsaber.style.boxShadow = glow;
-            vaderImage.style.filter = `brightness(${20 + 15 * val}%) contrast(130%)`; 
+
+            // החשכת הליבה הצהובה כדי שלא תיראה בחושך
+            lightsaber.style.opacity = val;
+
+            // החשכת התמונה עצמה לאפס (שחור מוחלט) כדי להעלים את החרב האדומה
+            vaderImage.style.filter = `brightness(${val * 25}%) contrast(130%)`; 
         });
 
+        // פונקציה למניעת כיבוי מסך
         async function requestWakeLock() {
             try {
                 wakeLock = await navigator.wakeLock.request('screen');
@@ -136,12 +150,14 @@
             }
         }
 
+        // האייפון דורש אינטראקציה ראשונית
         document.addEventListener('click', () => {
             if (!wakeLock) {
                 requestWakeLock();
             }
         }, { once: true });
 
+        // חידוש החסימה
         document.addEventListener('visibilitychange', () => {
             if (wakeLock !== null && document.visibilityState === 'visible') {
                 requestWakeLock();
