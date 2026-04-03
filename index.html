@@ -48,6 +48,7 @@
             transition: filter 0.1s ease;
         }
 
+        /* הקואורדינטות המדויקות שלך נשמרו */
         .lightsaber-warm {
             position: absolute;
             bottom: 17.5%; 
@@ -56,8 +57,9 @@
             width: 2%; 
             height: 55%; 
             
-            background-color: #ffd700;
+            background-color: #ffd700; /* ברירת מחדל: צהוב */
             border-radius: 10px;
+            /* הילה ראשונית (תתעדכן ב-JS) */
             box-shadow: 0 0 20px rgba(255, 215, 0, 1), 0 0 40px rgba(255, 165, 0, 1), 0 0 80px rgba(255, 165, 0, 1);
             
             transform-origin: bottom center; 
@@ -66,6 +68,7 @@
             opacity: 1;
             z-index: 2;
             pointer-events: none;
+            transition: background-color 0.2s, box-shadow 0.1s;
         }
 
         .controls {
@@ -94,10 +97,31 @@
             border-radius: 5px;
             background: rgba(255, 255, 255, 0.3);
             outline: none;
+            margin-bottom: 15px; /* מרווח בין הסליידר לכפתורים */
         }
         
+        /* מכלול לכפתורים בתחתית הפאנל */
+        .buttons-container {
+            display: flex;
+            justify-content: space-around; /* פיזור שווה */
+            align-items: center;
+            width: 100%;
+        }
+
+        /* כפתור החלפת צבע (עיגול ללא כיתוב) */
+        #color-toggle {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #fff; /* מסגרת לבנה */
+            cursor: pointer;
+            background-color: #ff0000; /* ברירת מחדל: אדום (החרב צהובה) */
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            transition: background-color 0.2s;
+        }
+
+        /* כפתור נעילת מסך (הוזז הצידה) */
         #status {
-            margin-top: 15px;
             font-size: 16px;
             color: rgba(255, 255, 255, 0.8);
             cursor: pointer;
@@ -117,7 +141,11 @@
 
     <div class="controls" id="controls-panel">
         <input type="range" id="brightness" min="0" max="100" value="100" dir="ltr">
-        <div id="status">נעילת מסך ✅</div>
+        
+        <div class="buttons-container">
+            <div id="status">נעילת מסך ✅</div>
+            <div id="color-toggle" title="החלף צבע חרב"></div>
+        </div>
     </div>
 
     <script>
@@ -125,10 +153,13 @@
         const vaderImage = document.querySelector('.vader-image');
         const lightsaber = document.querySelector('.lightsaber-warm');
         const statusText = document.getElementById('status');
+        const colorToggle = document.getElementById('color-toggle');
         const controlsPanel = document.getElementById('controls-panel');
         let wakeLock = null;
         let hideTimeout = null;
+        let currentColorMode = 'warm'; // מצב נוכחי: warm (צהוב) או red (אדום)
 
+        // מנגנון עלטת פאנל
         function resetHideTimer() {
             controlsPanel.classList.remove('hidden');
             clearTimeout(hideTimeout);
@@ -143,19 +174,57 @@
 
         resetHideTimer();
 
-        brightnessSlider.addEventListener('input', (e) => {
-            const val = e.target.value / 100;
+        // פונקציה מאוחדת לעדכון סגנון החרב (צבע, בהירות, הילה)
+        function applyStyleSettings() {
+            const val = brightnessSlider.value / 100;
+            let shadows = '';
 
-            const glow = `
-                0 0 20px rgba(255, 215, 0, ${val}), 
-                0 0 40px rgba(255, 165, 0, ${val}), 
-                0 0 80px rgba(255, 165, 0, ${val})
-            `;
-            lightsaber.style.boxShadow = glow;
+            if (currentColorMode === 'warm') {
+                // מצב צהוב-חם
+                lightsaber.style.backgroundColor = '#ffd700';
+                shadows = `
+                    0 0 20px rgba(255, 215, 0, ${val}), 
+                    0 0 40px rgba(255, 165, 0, ${val}), 
+                    0 0 80px rgba(255, 165, 0, ${val})
+                `;
+            } else {
+                // מצב אדום (שומר על תכונות הילה דומות)
+                lightsaber.style.backgroundColor = '#ff0000';
+                shadows = `
+                    0 0 20px rgba(255, 0, 0, ${val}), 
+                    0 0 40px rgba(200, 0, 0, ${val}), 
+                    0 0 80px rgba(150, 0, 0, ${val})
+                `;
+            }
+
+            lightsaber.style.boxShadow = shadows;
             lightsaber.style.opacity = val;
+            // עמעום התמונה המקורית כדי להעלים את החרב האדומה
             vaderImage.style.filter = `brightness(${val * 20}%) contrast(130%)`; 
+        }
+
+        // מאזין לסליידר
+        brightnessSlider.addEventListener('input', applyStyleSettings);
+
+        // מאזין לכפתור הצבע
+        colorToggle.addEventListener('click', (e) => {
+            e.stopPropagation(); // מונע מנגיעה לאפס את הטיימר באופן כפול
+            
+            if (currentColorMode === 'warm') {
+                currentColorMode = 'red';
+                // חרב אדומה -> כפתור צהוב
+                colorToggle.style.backgroundColor = '#ffd700'; 
+            } else {
+                currentColorMode = 'warm';
+                // חרב צהובה -> כפתור אדום
+                colorToggle.style.backgroundColor = '#ff0000';
+            }
+            
+            applyStyleSettings(); // עדכן את החרב
+            resetHideTimer(); // וודא שהפאנל לא נעלם מיד
         });
 
+        // מנגנון נעילת מסך
         async function requestWakeLock() {
             try {
                 wakeLock = await navigator.wakeLock.request('screen');
@@ -177,10 +246,11 @@
             } else {
                 await requestWakeLock();
             }
+            resetHideTimer(); // וודא שהפאנל לא נעלם מיד
         });
 
         document.addEventListener('click', (e) => {
-            if (!wakeLock && e.target.id !== 'status') {
+            if (!wakeLock && e.target.id !== 'status' && e.target.id !== 'color-toggle') {
                 requestWakeLock();
             }
         }, { once: true });
@@ -190,6 +260,10 @@
                 requestWakeLock();
             }
         });
+
+        // הפעל ראשונית של הסגנון
+        applyStyleSettings();
+
     </script>
 </body>
 </html>
